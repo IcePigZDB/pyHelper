@@ -1,19 +1,25 @@
 import sys
 import re
-# $$ formula $$
-interline_tag = '<!-- $${}$$ -->\n<div align="center"><img style="background: white;" src="https://render.githubusercontent.com/render/math?{}</div>'
-interline_pattern = '\$\$\n*(.*?)\n*\$\$'
-# $ formula $
-inline_tag= '<!-- ${}$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math={}">'
+from urllib.parse import quote
+# $$
+# formula
+# $$
+interline_tag = '\n<img src="https://render.githubusercontent.com/render/math?math={}" class="ee_img tr_noresize" eeimg="1">\n'
+# https://www.zhihu.com/equation?tex={}
+# http://latex.codecogs.com/gif.latex?{}
+interline_pattern = '\$\$\n*((.|\n)*?)\n*\$\$' # (.|\n) . or \n
+# $formula$
+inline_tag = '<img src="https://render.githubusercontent.com/render/math?math={}" class="ee_img tr_noresize" eeimg="1">'
 inline_pattern = '\$\n*(.*?)\n*\$'
 
 def replace_tex(content):
-	def dashrepl(matchobj, tag):
+	def dashrepl_quote(matchobj, tag):
 		formular = matchobj.group(1)
+		formular = quote(formular) # quote & to %26 in $$ x&= a+1$$, otherwise, thers will be error when render with githubusercontent.com
 		return tag.format(formular, formular)
 
-	content = re.sub(interline_pattern, lambda mo: dashrepl(mo, interline_tag), content)
-	content = re.sub(inline_pattern, lambda mo: dashrepl(mo, inline_tag), content)
+	content = re.sub(interline_pattern, lambda mo: dashrepl_quote(mo, interline_tag), content)
+	content = re.sub(inline_pattern, lambda mo: dashrepl_quote(mo, inline_tag), content)
 
 	return content
 
