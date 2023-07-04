@@ -1,0 +1,1 @@
+Use to parse fit file exported from ONELAP(顽鹿运动 ) app recorded by Magene C406.
